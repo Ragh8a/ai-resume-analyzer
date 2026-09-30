@@ -1,0 +1,17 @@
+{
+  "skills": [
+    "Python", "FastAPI", "SQL", "SQLite", "JavaScript", "HTML", "CSS", 
+    "Machine Learning", "Data Analysis", "Git", "Docker", "REST API", "Pandas", "NumPy", "Robotics", "Arduino"
+  ],
+  "roadmaps": {
+    "Backend Developer": ["Python", "FastAPI", "SQL", "REST API", "Git", "Docker"],
+    "Frontend Developer": ["HTML", "CSS", "JavaScript", "REST API", "Git"],
+    "Data Scientist / AI Engineer": ["Python", "Pandas", "NumPy", "Machine Learning", "SQL", "Git"]
+  },
+  "courses": {
+    "Python": "Python for Everybody Specialization (Coursera / YouTube)",
+    "FastAPI": "FastAPI Official Tutorial & FreeCodeCamp REST API course",
+    "Machine Learning": "Andrew Ng Machine Learning Course (Coursera)",
+    "JavaScript": "Modern JavaScript From The Beginning (Udemy / MDN Web Docs)"
+  }
+}

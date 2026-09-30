@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Resume Analyzer</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Tahoma, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .container {
+            width: min(1150px, 94%);
+            margin: 30px auto;
+        }
+
+        .header {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 25px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-right h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .header-right p {
+            margin: 0;
+            color: #666;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #welcome-user {
+            font-weight: bold;
+            color: #444;
+        }
+
+        #logout-btn {
+            border: none;
+            background: #dc3545;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #logout-btn:hover {
+            background: #bb2d3b;
+        }
+
+        .section {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .section h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        .section-description {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 13px 15px;
+            font-size: 15px;
+            outline: none;
+            background: #fff;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #6c63ff;
+        }
+
+        textarea {
+            min-height: 220px;
+            resize: vertical;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 22px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            background: #6c63ff;
+            color: white;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .result {
+            display: none;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #eee;
+        }
+
+        .result h3 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .result h3:first-child {
+            margin-top: 0;
+        }
+
+        .result-box {
+            background: #f8f9fc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0 18px;
+        }
+
+        .skill-badge,
+        .matched-skill,
+        .missing-skill {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .skill-badge {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .matched-skill {
+            background: #d1e7dd;
+            color: #146c43;
+        }
+
+        .missing-skill {
+            background: #f8d7da;
+            color: #b02a37;
+        }
+
+        .info-item {
+            background: #f8f9fc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .info-item strong {
+            display: block;
+            margin-bottom: 7px;
+        }
+
+        .info-item p {
+            margin: 0;
+            line-height: 1.7;
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 22px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .empty-result {
+            color: #777;
+            padding: 10px 0;
+        }
+
+        #match-score {
+            font-size: 35px;
+            font-weight: bold;
+            color: #6c63ff;
+            margin: 10px 0 25px;
+        }
+
+        .job-card {
+            border: 1px solid #e5e5e5;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: #fff;
+        }
+
+        .job-card h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        .job-card p {
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .job-score {
+            font-weight: bold;
+            color: #6c63ff !important;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-left {
+                justify-content: space-between;
+            }
+
+            .section {
+                padding: 18px;
+            }
+
+            .header-right h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="dashboard" class="container">
+
+        <header class="header">
+            <div class="header-right">
+                <h1>AI Resume Analyzer 📄</h1>
+                <p>
+                    Analyze your resume and match your skills with suitable jobs using AI.
+                </p>
+            </div>
+
+            <div class="header-left">
+                <span id="welcome-user">Welcome</span>
+
+                <button type="button" id="logout-btn">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <section class="section">
+            <h2>
+                <i class="fa-solid fa-file-circle-check"></i>
+                Resume Analysis
+            </h2>
+
+            <p class="section-description">
+                Upload your resume in PDF or DOCX format to analyze your skills,
+                experience, and education.
+            </p>
+
+            <form id="upload-form">
+                <div class="form-group">
+                    <label for="resume-file">Resume File</label>
+
+                    <input type="file" id="resume-file" name="file" accept=".pdf,.docx" required>
+                </div>
+
+                <button type="submit">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Analyze Resume
+                </button>
+            </form>
+
+            <div id="analysis-result" class="result">
+                <h3>File Name</h3>
+                <div id="result-filename" class="result-box"></div>
+
+                <h3>Technical Skills</h3>
+                <div id="technical-skills" class="skills-container"></div>
+
+                <h3>Soft Skills</h3>
+                <div id="soft-skills" class="skills-container"></div>
+
+                <h3>Education</h3>
+                <div id="education" class="result-box"></div>
+
+                <h3>Experience</h3>
+                <div id="experience" class="result-box"></div>
+
+                <h3>Summary</h3>
+                <div id="summary" class="result-box"></div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>
+                <i class="fa-solid fa-briefcase"></i>
+                Job Match
+            </h2>
+
+            <p class="section-description">
+                Compare your skills with the required job skills and get a match score.
+            </p>
+
+            <form id="match-form">
+                <div class="form-group">
+                    <label for="extracted-skills-input">Resume Skills</label>
+
+                    <input type="text" id="extracted-skills-input" placeholder="Example: Python, FastAPI, SQL, Git">
+                </div>
+
+                <div class="form-group">
+                    <label for="job-skills-input">Required Job Skills</label>
+
+                    <input type="text" id="job-skills-input" placeholder="Example: Python, FastAPI, SQL, Docker, AWS">
+                </div>
+
+                <button type="submit">
+                    <i class="fa-solid fa-user-check"></i>
+                    Match Job
+                </button>
+            </form>
+
+            <div id="match-result" class="result">
+                <h3>Match Score</h3>
+
+                <div id="match-score">0%</div>
+
+                <h3>Matched Skills</h3>
+                <div id="matched-skills" class="skills-container"></div>
+
+                <h3>Missing Skills</h3>
+                <div id="missing-skills" class="skills-container"></div>
+
+                <h3>Recommendations</h3>
+                <div id="advisor-recommendations"></div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                Resume Improvement
+            </h2>
+
+            <p class="section-description">
+                Enter your resume text and current skills to get suggestions for improvement.
+            </p>
+
+            <div class="form-group">
+                <label for="resume-text-input">Resume Text</label>
+
+                <textarea id="resume-text-input" placeholder="Enter your resume text here..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="improve-skills-input">Current Skills</label>
+
+                <input type="text" id="improve-skills-input" placeholder="Example: Python, FastAPI, SQL">
+            </div>
+
+            <button type="button" id="improve-resume-btn">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                Improve Resume
+            </button>
+
+            <div id="improve-result" class="result">
+                <h3>Weaknesses</h3>
+                <div id="weaknesses" class="result-box"></div>
+
+                <h3>Improvement Suggestions</h3>
+                <div id="improvements" class="result-box"></div>
+
+                <h3>Missing Skills</h3>
+                <div id="improvement-missing-skills" class="skills-container"></div>
+
+                <h3>Recommended Certifications</h3>
+                <div id="certifications" class="result-box"></div>
+
+                <h3>Learning Resources</h3>
+                <div id="learning-resources" class="result-box"></div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>
+                <i class="fa-solid fa-suitcase"></i>
+                Suitable Jobs
+            </h2>
+
+            <p class="section-description">
+                Find jobs that match the skills listed in your resume.
+            </p>
+
+            <button type="button" id="recommend-jobs-btn">
+                <i class="fa-solid fa-briefcase"></i>
+                Find Suitable Jobs
+            </button>
+
+            <div id="jobs-result" class="result">
+                <div id="jobs-list"></div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Job Search
+            </h2>
+
+            <p class="section-description">
+                Search for jobs by title, company, skill, and experience level.
+            </p>
+
+            <div class="form-group">
+                <label for="search-title">Job Title</label>
+
+                <input type="text" id="search-title" placeholder="Example: Backend Developer">
+            </div>
+
+            <div class="form-group">
+                <label for="search-company">Company</label>
+
+                <input type="text" id="search-company" placeholder="Example: Google">
+            </div>
+
+            <div class="form-group">
+                <label for="search-skill">Skill</label>
+
+                <input type="text" id="search-skill" placeholder="Example: Python">
+            </div>
+
+            <div class="form-group">
+                <label for="search-experience">Experience Level</label>
+
+                <select id="search-experience">
+                    <option value="">All Levels</option>
+                    <option value="Entry Level">Entry Level</option>
+                    <option value="Junior">Junior</option>
+                    <option value="Mid Level">Mid Level</option>
+                    <option value="Senior">Senior</option>
+                    <option value="Lead">Lead</option>
+                </select>
+            </div>
+
+            <button type="button" id="search-jobs-btn">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Search
+            </button>
+
+            <div id="search-jobs-result" class="result">
+                <div id="search-jobs-list"></div>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="/static/script.js"></script>
+
+</body>
+
+</html>
